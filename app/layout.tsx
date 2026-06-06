@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/lib/theme-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,11 +36,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var theme = localStorage.getItem('theme');
-                  if (!theme) {
-                    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                  }
-                  if (theme === 'dark') {
+                  if (localStorage.getItem('theme') === 'dark') {
                     document.documentElement.classList.add('dark');
                   }
                 } catch(e) {}
@@ -49,7 +46,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

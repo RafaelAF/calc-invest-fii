@@ -13,6 +13,7 @@ interface FundoProspeccaoInput {
   precoEsperado: number;
   dividendoEsperado: number;
   quantidadeMensal: number;
+  autocompra: boolean;
 }
 
 export function calcularProjecao(
@@ -76,6 +77,29 @@ export function calcularProjecao(
           totalAportado += custo;
           gastoProspeccao += custo;
         }
+      }
+    }
+
+    for (const prosp of prospeccaoAtivos) {
+      if (!prosp.autocompra) continue;
+      if (caixa <= 0) break;
+      const cotasCompradas = Math.floor(caixa / prosp.precoEsperado);
+      if (cotasCompradas > 0) {
+        const custo = cotasCompradas * prosp.precoEsperado;
+        const idx = portfolio.findIndex((p) => p.ticker === prosp.ticker);
+        if (idx >= 0) {
+          portfolio[idx].quantidade += cotasCompradas;
+        } else {
+          portfolio.push({
+            ticker: prosp.ticker,
+            quantidade: cotasCompradas,
+            preco: prosp.precoEsperado,
+            dividendoMensal: prosp.dividendoEsperado,
+          });
+        }
+        caixa -= custo;
+        totalAportado += custo;
+        gastoProspeccao += custo;
       }
     }
 

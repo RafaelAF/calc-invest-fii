@@ -16,6 +16,7 @@ export interface FundoProspeccao {
   precoEsperado: number;
   dividendoEsperado: number;
   quantidadeMensal: number;
+  autocompra: boolean;
 }
 
 export interface FundoSimulado {

@@ -10,6 +10,7 @@ interface Props {
   excedeAporte: boolean;
   aporteMensal: number;
   onAtualizar: (ticker: string, quantidadeMensal: number) => void;
+  onToggleAutocompra: (ticker: string, autocompra: boolean) => void;
   onRemover: (ticker: string) => void;
   onAbrirSelecao: () => void;
 }
@@ -20,6 +21,7 @@ export default function ProspeccaoCard({
   excedeAporte,
   aporteMensal,
   onAtualizar,
+  onToggleAutocompra,
   onRemover,
   onAbrirSelecao,
 }: Props) {
@@ -99,6 +101,19 @@ export default function ProspeccaoCard({
                 <p className="text-xs text-slate-400">
                   {formatCurrency(item.quantidadeMensal * item.precoEsperado)}/mês
                 </p>
+              </div>
+              <div className="mt-1.5 flex items-center">
+                <label className="flex cursor-pointer items-center gap-1.5">
+                  <input
+                    type="checkbox"
+                    checked={item.autocompra}
+                    onChange={(e) => onToggleAutocompra(item.ticker, e.target.checked)}
+                    className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
+                  />
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Autocompra: usar sobra do caixa para comprar mais cotas
+                  </span>
+                </label>
               </div>
             </div>
           );

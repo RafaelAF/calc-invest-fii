@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import type { Fundo, FundoEmCarteira, FundoProspeccao, FundoSimulado } from "@/lib/types";
 import { FUNDOS_DISPONIVEIS } from "@/lib/funds-database";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/lib/data";
 import { calcularProjecao } from "@/lib/calculations";
 import { formatCurrency, buscarFundo } from "@/lib/utils";
+import { carregarDados, salvarDados } from "@/lib/storage";
 
 import ModalGerenciarFundos from "@/components/ModalGerenciarFundos";
 import ModalSelecionarFundo from "@/components/ModalSelecionarFundo";
@@ -23,12 +24,12 @@ import TabelaDetalhamento from "@/components/TabelaDetalhamento";
 import TooltipFundo from "@/components/TooltipFundo";
 
 export default function Home() {
-  const [fundosDisponiveis, setFundosDisponiveis] = useState<Fundo[]>(FUNDOS_DISPONIVEIS);
-  const [valorEmCaixa, setValorEmCaixa] = useState(VALOR_INICIAL_CAIXA);
-  const [fundosCarteira, setFundosCarteira] = useState<FundoEmCarteira[]>(FUNDOS_INICIAIS_CARTEIRA);
-  const [fundosProspeccao, setFundosProspeccao] = useState<FundoProspeccao[]>(FUNDOS_INICIAIS_PROSPECCAO);
-  const [aporteMensal, setAporteMensal] = useState(APORTE_MENSAL_PADRAO);
-  const [tempoMeses, setTempoMeses] = useState(TEMPO_PADRAO_MESES);
+  const [fundosDisponiveis, setFundosDisponiveis] = useState<Fundo[]>(() => carregarDados().fundosDisponiveis);
+  const [valorEmCaixa, setValorEmCaixa] = useState(() => carregarDados().valorEmCaixa);
+  const [fundosCarteira, setFundosCarteira] = useState<FundoEmCarteira[]>(() => carregarDados().fundosCarteira);
+  const [fundosProspeccao, setFundosProspeccao] = useState<FundoProspeccao[]>(() => carregarDados().fundosProspeccao);
+  const [aporteMensal, setAporteMensal] = useState(() => carregarDados().aporteMensal);
+  const [tempoMeses, setTempoMeses] = useState(() => carregarDados().tempoMeses);
   const [tabelaAberta, setTabelaAberta] = useState(false);
   const [confirmandoExclusao, setConfirmandoExclusao] = useState<string | null>(null);
   const [modalFundosAberto, setModalFundosAberto] = useState(false);
@@ -79,6 +80,7 @@ export default function Home() {
           precoEsperado: p.precoEsperado,
           dividendoEsperado: p.dividendoEsperado,
           quantidadeMensal: p.quantidadeMensal,
+          autocompra: p.autocompra,
         })),
         valorEmCaixa,
         aporteMensal,
@@ -127,11 +129,13 @@ export default function Home() {
     if (!fundo) return;
     setFundosProspeccao((prev) => [
       ...prev,
-      { ticker: fundo.ticker, precoEsperado: fundo.preco, dividendoEsperado: fundo.dividendoMensal, quantidadeMensal: 1 },
+      { ticker: fundo.ticker, precoEsperado: fundo.preco, dividendoEsperado: fundo.dividendoMensal, quantidadeMensal: 1, autocompra: false },
     ]);
   };
   const atualizarProspeccao = (ticker: string, quantidadeMensal: number) =>
     setFundosProspeccao((prev) => prev.map((f) => (f.ticker === ticker ? { ...f, quantidadeMensal } : f)));
+  const toggleAutocompra = (ticker: string, autocompra: boolean) =>
+    setFundosProspeccao((prev) => prev.map((f) => (f.ticker === ticker ? { ...f, autocompra } : f)));
   const removerDaProspeccao = (ticker: string) =>
     setFundosProspeccao((prev) => prev.filter((f) => f.ticker !== ticker));
 
@@ -146,6 +150,10 @@ export default function Home() {
     setFundosCarteira((prev) => prev.filter((f) => f.ticker !== ticker));
     setFundosProspeccao((prev) => prev.filter((f) => f.ticker !== ticker));
   };
+
+  useEffect(() => {
+    salvarDados({ fundosDisponiveis, valorEmCaixa, fundosCarteira, fundosProspeccao, aporteMensal, tempoMeses });
+  }, [fundosDisponiveis, valorEmCaixa, fundosCarteira, fundosProspeccao, aporteMensal, tempoMeses]);
 
   const tickersNaCarteira = fundosCarteira.map((f) => f.ticker);
   const tickersNaProspeccao = fundosProspeccao.map((f) => f.ticker);
@@ -239,6 +247,7 @@ export default function Home() {
               excedeAporte={excedeAporte}
               aporteMensal={aporteMensal}
               onAtualizar={atualizarProspeccao}
+              onToggleAutocompra={toggleAutocompra}
               onRemover={removerDaProspeccao}
               onAbrirSelecao={() => setModalSelecionarProspeccaoAberto(true)}
             />
@@ -308,6 +317,15 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <footer className="mx-auto mt-12 max-w-7xl border-t border-slate-200 dark:border-slate-800 pt-6 pb-8">
+        <p className="text-xs text-slate-400 dark:text-slate-500 leading-relaxed text-center">
+          Esta calculadora é apenas uma ferramenta de simulação. Os dados exibidos são estáticos e não
+          representam valores reais de mercado. Nenhum dado pessoal é armazenado ou compartilhado (LGPD).
+          Alguns valores podem não estar 100% corretos — futuramente a calculadora receberá ajustes e
+          melhorias.
+        </p>
+      </footer>
 
       <TooltipFundo tooltip={tooltip} fundo={fundoTooltip} />
     </div>

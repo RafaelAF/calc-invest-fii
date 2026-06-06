@@ -42,7 +42,7 @@ export default function TabelaDetalhamento({
               <tr className="bg-slate-900 dark:bg-slate-800 text-white">
                 <th className="px-4 py-3 font-semibold">Mês</th>
                 <th className="px-4 py-3 font-semibold text-right">Total Investido</th>
-                <th className="px-4 py-3 font-semibold text-right text-indigo-500">Prospecção</th>
+                <th className="px-4 py-3 font-semibold text-right text-indigo-500">Prospecção de aporte</th>
                 <th className="px-4 py-3 font-semibold text-right">Rendimento</th>
                 <th className="px-4 py-3 font-semibold text-right">Patrimônio</th>
               </tr>

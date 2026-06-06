@@ -2,6 +2,16 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+*, *::before, *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none;
+  }
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
