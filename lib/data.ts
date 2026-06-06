@@ -1,6 +1,6 @@
 import type { FundoEmCarteira, FundoProspeccao } from "./types";
 
-export const VALOR_INICIAL_CAIXA = 3.31;
+export const VALOR_INICIAL_CAIXA = 0;
 
 export const FUNDOS_INICIAIS_CARTEIRA: FundoEmCarteira[] = [
   // { ticker: "HGLG11", quantidade: 10 },
