@@ -21,6 +21,7 @@ import CarteiraCard from "@/components/CarteiraCard";
 import ProspeccaoCard from "@/components/ProspeccaoCard";
 import KPICards from "@/components/KPICards";
 import TabelaDetalhamento from "@/components/TabelaDetalhamento";
+import PatrimonialDashboard from "@/components/PatrimonialDashboard";
 import TooltipFundo from "@/components/TooltipFundo";
 
 export default function Home() {
@@ -309,6 +310,8 @@ export default function Home() {
               ultimoRendimento={dividendoUltimoMes}
             />
 
+            <PatrimonialDashboard resultados={resultados} />
+
             <TabelaDetalhamento
               resultados={resultados}
               aberta={tabelaAberta}
@@ -318,13 +321,25 @@ export default function Home() {
         </div>
       </div>
 
-      <footer className="mx-auto mt-12 max-w-7xl border-t border-slate-200 dark:border-slate-800 pt-6 pb-8">
+      <footer className="mx-auto mt-12 max-w-7xl border-t border-slate-200 dark:border-slate-800 pt-6 pb-8 space-y-4">
         <p className="text-xs text-slate-400 dark:text-slate-500 leading-relaxed text-center">
           Esta calculadora é apenas uma ferramenta de simulação. Os dados exibidos são estáticos e não
           representam valores reais de mercado. Nenhum dado pessoal é armazenado ou compartilhado (LGPD).
           Alguns valores podem não estar 100% corretos — futuramente a calculadora receberá ajustes e
           melhorias.
         </p>
+        <div className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+          <span>Desenvolvido por Rafael</span>
+          <span className="text-slate-300 dark:text-slate-600">|</span>
+          <a
+            href="https://www.linkedin.com/in/antonio-ferreira1/?locale=en-US"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+          >
+            LinkedIn
+          </a>
+        </div>
       </footer>
 
       <TooltipFundo tooltip={tooltip} fundo={fundoTooltip} />

@@ -6,27 +6,39 @@ type Theme = "light" | "dark";
 
 const ThemeContext = createContext({
   theme: "light" as Theme,
-  toggle: () => { },
+  toggle: () => {},
 });
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [_, setMounted] = useState(false);
+export function ThemeProvider({
+  children,
+  initialTheme,
+}: {
+  children: ReactNode;
+  initialTheme?: Theme;
+}) {
+  const [theme, setTheme] = useState<Theme>(initialTheme ?? "light");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("theme") as Theme | null;
-    const initial = stored === "dark" ? "dark" : "light";
-    setTheme(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
+    if (stored && stored !== theme) {
+      setTheme(stored);
+      document.documentElement.classList.toggle("dark", stored === "dark");
+    }
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (mounted) {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+    }
+  }, [theme, mounted]);
+
   const toggle = () => {
     const next = theme === "light" ? "dark" : "light";
-    console.log("sadsad", next)
     setTheme(next);
     localStorage.setItem("theme", next);
-    document.documentElement.classList.toggle("dark", next === "dark");
+    document.cookie = `theme=${next};path=/;max-age=31536000;SameSite=Lax`;
   };
 
   return (
